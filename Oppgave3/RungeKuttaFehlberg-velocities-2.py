@@ -9,6 +9,7 @@ Created on Thu Aug 30 20:26:05 2018
 import numpy as np
 import math as m
 import sys
+from math import sqrt
 
 class RungeKuttaFehlberg54:
 
@@ -38,41 +39,47 @@ class RungeKuttaFehlberg54:
 
     #This function is used all the time
     def step(self,
-             Win):
+             Win, velocitiesIn):
         s=np.zeros((6,self.dim))
+        velocitiesOut=np.zeros((6,3)) #vx, vy, vz
 
         #Calculate all 6 s-values/vectors
         for i in range(0,6):
-            s[i,:]=self.F(Win+self.h*self.A[i,0:i].dot(s[0:i,:]))
+            s[i,:], velocitiesOut[i,:]=self.F(Win+self.h*self.A[i,0:i].dot(s[0:i,:]),velocitiesIn)
             print(s[i,:])
+            print("velocitiesOut: "+str(i))
+            print(velocitiesOut[i])
 
         Zout=Win+self.h*(self.B[0,:].dot(s)); #In the book, Zout is better than Wout, given that Zout is the locally extrapolated version.
         Wout=Win+self.h*(self.B[1,:].dot(s));
 
         E=np.linalg.norm(Wout-Zout,2)/np.linalg.norm(Wout,2);
-        return Wout, E
+
+        velocitiesOut = velocitiesIn
+        return Wout, E, velocitiesOut
 
     def safeStep(self,
-                 Win): #Win are the current approximations for y
-        Wout,E = self.step(Win); #Makes a normal step
+                 Win, velocityIn): #Win are the current approximations for y
+        Wout,E, velocitiesOut = self.step(Win, velocityIn); #Makes a normal step
         # Check if the error is tolerable
         if(not self.isErrorTolerated(E)):
             #Try to adjust the optimal step length
             self.adjustStep(E);
-            Wout,E = self.step(Win);
+            Wout,E, velocitiesOut = self.step(Win, velocityIn);
         # If the error is still not tolerable
         counter=0;
         while(not self.isErrorTolerated(E)):
             #Try if dividing the steplength with 2 helps.
             self.divideStepByTwo();
-            Wout,E = self.step(Win);
+
+            Wout,E, velocitiesOut = self.step(Win, velocityIn);
             counter = counter + 1;
             if(counter>10):
                 sys.exit(-1); #Some sort of way to get out of an inifinite step size reducing loop
 
         self.adjustStep(E);
 
-        return Wout, E
+        return Wout, E, velocitiesOut
 
     def isErrorTolerated(self,E):
         return E<self.tol;
@@ -92,23 +99,42 @@ class RungeKuttaFehlberg54:
 
 #The actual equations to be "solved" numerically and their initial values are to be set here
 #F = ydot = y derivert
-def F(Y):
+def F(Y, velocitiesIn):
 
-    #Y er en vektor med 3 verdier w; x y og z
+    velocitiesOut = np.zeros(3)
+    G=1
+    m1=1 #Mass Moon
+    m2=3 #Mass Earth
+    Gm2=G*m2;
+    px1 = Y[1] #x-coordinate of moon at the moment
+    py1 = Y[2] #y-coordinate of moon at the moment
+    px2 = 0 #Earth is centered in (0,0)
+    py2 = 0 #Earth is centered in (0,0)
 
+    dist=sqrt((px2-px1)**2+(py2-py1)**2);
 
-    """
-    xDot = v_x \\
-    v_x' &= -G\frac{m_2 x}{(x^2+y^2)^{3/2}} \\
-    y' &= v_y \\
-    v_y' &= -G\frac{m_2 y}{(x^2+y^2)^{3/2}}
+    #The 4 functions for one-body problem from the book
+    velocitiesOut[0] = velocitiesIn[0]
+    x_acceleration = (Gm2*(px2-px1))/(dist**3) #x double derivative
+    velocitiesOut[1] = velocitiesIn[1]
+    y_acceleration = (Gm2*(py2-py1))/(dist**3) #y double deriviative
+
     """
     M=np.array([[0.49119653, 0.32513304, 0.98057799],
                 [0.20768544, 0.97699416, 0.18220559],
                 [0.96407071, 0.18373237, 0.95307793]]);
     res=np.ones(4);
     res[1:4]=M.dot(Y[1:4]); #Mutiply each x, y, z with
-    return res;
+    """
+
+    res=np.ones(4);
+    res[1] = x_acceleration
+    res[2] = y_acceleration
+    res[3] = 0 #z-acceleration
+
+    print("VelocitiesOut:")
+    print(velocitiesOut)
+    return res, velocitiesOut
 
 
 def main():
@@ -120,10 +146,10 @@ def main():
     rkf54 = RungeKuttaFehlberg54(F,4,h,tol) #function, dimension, stepsize, tolerance. Why is dimension = 4?
 
     while(W[0]<tEnd): #Why use W[0] here? Is it the current time?
-        W , E = rkf54.safeStep(W); #Returns a new vector of approximated y-values W. And an error vector?
+        W , E, velocities = rkf54.safeStep(W,velocities); #Returns a new vector of approximated y-values W. And an error vector?
 
     rkf54.setStepLength(tEnd-W[0]); #Makes no sense. This would make the step length 1.9 after the first iteration.
-    W,E = rkf54.step(W); #Make one step forward.
+    W,E = rkf54.step(W,velocities); #Make one step forward.
 
     print(W,E);
 

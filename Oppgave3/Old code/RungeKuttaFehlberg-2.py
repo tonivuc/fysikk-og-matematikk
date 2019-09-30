@@ -40,10 +40,11 @@ class RungeKuttaFehlberg54:
     def step(self,
              Win):
         s=np.zeros((6,self.dim))
+        v=np.zeros((6,3))
 
         #Calculate all 6 s-values/vectors
         for i in range(0,6):
-            s[i,:]=self.F(Win+self.h*self.A[i,0:i].dot(s[0:i,:]))
+            s[i,:]=self.F(Win+self.h*self.A[i,0:i].dot(s[0:i,:]),v)
             print(s[i,:])
 
         Zout=Win+self.h*(self.B[0,:].dot(s)); #In the book, Zout is better than Wout, given that Zout is the locally extrapolated version.
@@ -92,7 +93,7 @@ class RungeKuttaFehlberg54:
 
 #The actual equations to be "solved" numerically and their initial values are to be set here
 #F = ydot = y derivert
-def F(Y):
+def F(Y, velocitiesIn):
 
     #Y er en vektor med 3 verdier w; x y og z
 

@@ -110,6 +110,8 @@ def F(Y):
     res[1:4]=M.dot(Y[1:4]); #Mutiply each x, y, z with
     return res;
 
+def oneRow
+
 
 def main():
     W  =np.array([0,1,1,1]); #Initial values for [t,x,y,z]
