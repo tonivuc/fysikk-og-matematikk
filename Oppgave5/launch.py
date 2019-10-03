@@ -3,7 +3,7 @@ import math
 from SaturnV import SaturnV
 
 earth_mass = 5.9736 * (10**24) # Jordens masse i kilogram
-earth_radius = (12756.28/2) * 1000 # Jordens radius ved ekvator
+earth_radius = (12756.28/2) * 1000 # Jordens radius ved ekvator i meter
 gravity_constant = 6.67428 * (10**(-11)) # Gravitasjonskonstanten
 area_stage_one = 113 # Overflateområde steg en for Saturn V
 area_stage_two = 79.5 # Overflateområde steg to for Saturn V
@@ -42,7 +42,7 @@ def Fs(t):
     return saturnV.calculateThrust(t)
 
 def Fg(t, a):
-    return gravity_constant * ((earth_mass * mass(t))/distance(t, a))
+    return gravity_constant * ((earth_mass * mass(t))/(distance(t, a)**2))
 
 def pressure(h):
     if h < 11000:
@@ -94,11 +94,17 @@ def main():
     m = np.zeros(steps + 1)
     v = np.zeros(steps + 1)
 
+    for t in range(steps + 1):
+        print(Fg(t, a))
+
     # Initialiserer startverdier
     m[0] = mass(0)
     v[0] = 0
-    F[0] = Fs(0) - Fg(1, a)
+    # Tyngdekraften er betydelig større enn skyvekraften
+    F[0] = Fs(0) - gravity_constant * ((earth_mass * m[0])/(earth_radius**2))
+    print(F[0])
     a[0] = F[0] / m[0]
+    #print(a[0])
 
     for t in range(1, steps + 1):
         m[t] = mass(t)
