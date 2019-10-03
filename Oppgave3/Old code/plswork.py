@@ -1,5 +1,7 @@
 
 from numpy import sqrt
+from RungeKuttaFehlberg_2 import RungeKuttaFehlberg54
+from RungeKuttaFehlberg_2 import F
 import time
 
 import numpy as np
@@ -50,6 +52,8 @@ class NumericalSolver:
         z[4]=(Gm2*(py2-py1))/(dist**3) #(vy)' = (Change in velocity in y-direction per time)
         return z #Returns s1 or s2
 
+
+
 class Orbit:
     """
 
@@ -98,10 +102,17 @@ class Orbit:
 # make an Orbit instance
 
 #List of all planets in the system
+# [t0,x0,vx0,y0,vx0]
 list = [Orbit([0.0,0.0, 1.0, 2.0, 0.0],1,1,3),Orbit([0.0,0.0, 0.0, 0.0, 0.0],1,3,1)]
 planetz = np.array(list)
 
-dt = 1./30 # 30 frames per second
+#h=0.1; #Step size
+tol=05e-14; #RelativeS error, or just error?
+tEnd=10.0; #Value for t where we stop the approximation
+#dt = 1./30 # 30 frames per second
+dt = 1./90 # 30 frames per second
+rkf54 = RungeKuttaFehlberg54(F,5,dt,tol) #function, dimension, stepsize, tolerance. Why is dimension = 4?
+
 
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
@@ -121,15 +132,19 @@ def init():
     energy_text.set_text('')
     return line1, line2, time_text, energy_text
 
+
 #Basically main
 def animate(i):
     """perform animation step"""
     global orbit, orbit2, dt, planetz #Allows to modify a variable outside of the current scope
 
-    NumericalSolver.step(planetz,dt)
+    W , E = rkf54.safeStep(planetz[0].state);
+    planetz[0].state = W
+
+    #NumericalSolver.step(planetz,dt)
 
     line1.set_data(*planetz[0].position()) #Green planet * operator means to take the array data x and y, and use them as parameters in the set_data function.
-    line2.set_data(*planetz[1].position()) #Sun. Position is constant.
+    line2.set_data([0,0]) #Sun. Position is constant.
     time_text.set_text('time = %.1f' % planetz[0].time_elapsed())
     energy_text.set_text('energy = %.3f J' % planetz[0].energy())
     return line1,line2, time_text, energy_text
