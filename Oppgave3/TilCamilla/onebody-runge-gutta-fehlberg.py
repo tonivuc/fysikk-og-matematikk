@@ -109,7 +109,6 @@ planetz = np.array(list)
 #h=0.1; #Step size
 tol=05e-14; #RelativeS error, or just error?
 #tEnd=10.0; #Value for t where we stop the approximation
-#dt = 1./30 # 30 frames per second
 dt = 1./30 # 30 frames per second
 rkf54 = RungeKuttaFehlberg54(F,5,dt,tol) #function, dimension, stepsize, tolerance. Why is dimension = 4?
 
