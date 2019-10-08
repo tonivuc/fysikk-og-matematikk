@@ -73,7 +73,7 @@ class Orbit:
         self.mSol = m2 #Mass of sun
         self.mPlanet = m1 #Mass of planet
         self.state = np.asarray(init_state, dtype='float')
-        self.xy = [[0], [0.4055e9]]
+        self.xy = [[0], [362570e3]]
 
     def position(self):
         """compute the current x,y positions of the pendulum arms"""
@@ -131,7 +131,7 @@ list = [Orbit([0.0,0.0, 1082, 362570e3, 0.0]),Orbit([0.0,0.0, 0.0, 0.0, 0.0])]
 planetz = np.array(list)
 
 #h=0.1; #Step size
-tol=05e-14; #RelativeS error, or just error?
+tol=02e-14; #RelativeS error, or just error?
 #tEnd=10.0; #Value for t where we stop the approximation
 #dt = 1./30 # 30 frames per second
 dt = 1.0/30.0 # 30 frames per second
@@ -183,10 +183,7 @@ t0 = time.time()
 animate(0)
 t1 = time.time()
 
-print((t1 - t0))
-
 delay = 1000 * dt - (t1 - t0)
-print(delay)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
