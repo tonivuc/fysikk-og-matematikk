@@ -144,10 +144,9 @@ axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
                      xlim=(-4.5e8, 4.5e8), ylim=(-4.5e8, 4.5e8))
 
 line1, = axes.plot([], [], 'o-g', lw=2) # A green planet
-line2, = axes.plot([], [], 'o-y', lw=2) # A yellow sun
 line1_2, = axes.plot([], [], 'r--', linewidth=0.5)
+line2, = axes.plot([], [], 'o-y', lw=2) # A yellow sun
 time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
-energy_text = axes.text(0.02, 0.90, '', transform=axes.transAxes)
 position_text = axes.text(0.02, 0.85, '', transform=axes.transAxes)
 
 def init():
@@ -156,9 +155,8 @@ def init():
     line1_2.set_data([], [])
     line2.set_data([], [])
     time_text.set_text('')
-    energy_text.set_text('')
     position_text.set_text('')
-    return line1, line2, time_text, energy_text, position_text
+    return line1, line1_2, line2, time_text, position_text
 
 
 #Basically main
@@ -176,9 +174,8 @@ def animate(i):
     line1_2.set_data(planetz[0].xy)
     line2.set_data([0,0]) #Sun. Position is constant.
     time_text.set_text('time = %.1f' % planetz[0].time_elapsed())
-    energy_text.set_text('energy = %.3f J' % planetz[0].energy())
-    position_text.set_text('x = %.3f*10e6 km' % (planetz[0].position()[0]/1e9) + ', y = %.3f*10e6 km' % (planetz[0].position()[1]/1e9))
-    return line1,line2, time_text, energy_text, position_text
+    position_text.set_text('avstand = %.3f* km' % ((np.sqrt(planetz[0].position()[0]**2 + planetz[0].position()[1]**2))/1e3))
+    return line1, line1_2, line2, time_text, position_text
 
 # choose the interval based on dt and the time to animate one step
 # Take the time for one call of the animate.
