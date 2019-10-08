@@ -116,7 +116,7 @@ def F(Y):
 def main():
     # W = initial values
     #          [t,x,vx,y,vy]
-    W  =np.array([0.0,0.0, 970, 0.4055e9, 0.0]);
+    W  =np.array([0.0,0.0, 1082, 362570e3, 0.0]);
     h=0.25; #Step size (0.1 t)
     tol=05e-14; #RelativeS error, or just error?
     tEnd=10.0; #Value for t where we stop the approximation

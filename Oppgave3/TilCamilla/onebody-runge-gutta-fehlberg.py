@@ -127,7 +127,7 @@ class Orbit:
 
 #List of all planets in the system
 # [t0,x0,vx0,y0,vx0]
-list = [Orbit([0.0,0.0, 970, 0.4055e9, 0.0]),Orbit([0.0,0.0, 0.0, 0.0, 0.0])]
+list = [Orbit([0.0,0.0, 1082, 362570e3, 0.0]),Orbit([0.0,0.0, 0.0, 0.0, 0.0])]
 planetz = np.array(list)
 
 #h=0.1; #Step size
