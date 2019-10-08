@@ -135,7 +135,7 @@ tol=05e-14; #RelativeS error, or just error?
 #tEnd=10.0; #Value for t where we stop the approximation
 #dt = 1./30 # 30 frames per second
 dt = 1.0/30.0 # 30 frames per second
-rkf54 = RungeKuttaFehlberg54(planetz[0].ydot,5,dt,tol) #function, dimension, stepsize, tolerance. Why is dimension = 4?
+rkf54 = RungeKuttaFehlberg54(planetz[0].ydot,planetz[0].state.size,dt,tol) #function, dimension, stepsize, tolerance.
 
 
 # The figure is set
@@ -167,7 +167,7 @@ def animate(i):
     global orbit, orbit2, dt, planetz #Allows to modify a variable outside of the current scope
 
     W , E = rkf54.safeStep(planetz[0].state);
-    print(W)
+    #print(W)
     planetz[0].state = W
 
     #NumericalSolver.step(planetz,dt)
@@ -186,7 +186,10 @@ t0 = time.time()
 animate(0)
 t1 = time.time()
 
+print((t1 - t0))
+
 delay = 1000 * dt - (t1 - t0)
+print(delay)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
