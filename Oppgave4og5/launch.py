@@ -87,6 +87,7 @@ def density(t, v):
         print("pressure: ", pressure(h))
     return (pressure(h)/temperature(h)) * 3.4855
 
+#Air resistance (Force drag)
 def Fd(t, a, v):
     return (1/2)*(1/2)*density(t, v)*area(t)*(speed(t, a, v)**2)
 
@@ -95,7 +96,7 @@ def main():
     # Lav jordbane går cirka til 2000 kilometer
     target_height = 2000000 # Målhøyde i meter
     # Antall tidstrinn
-    steps = b1 + b2 + b3
+    steps = b1 + b2 + b3 #= amount of seconds for the entire launch (burn 1 + burn 2 + burn 3)
 
     # Lager tabellene med plassholdere
     F = np.zeros(steps + 1)

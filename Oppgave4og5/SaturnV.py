@@ -12,7 +12,7 @@ class SaturnV:
 	consumption_three = 219;
 	burn_three = 500;
 	thrust_three = 1033100;
-	
+
 	# Init with all the necessary values
 	def __init__(self,
 				step_one,
@@ -69,7 +69,9 @@ class SaturnV:
 			thrust = 0;
 		return thrust;
 
-			
+	def getBurntime
+
+
 def main():
 	#Mass of different stages (kilograms)
 	m1 = 2970000;
@@ -90,15 +92,15 @@ def main():
 
 	#Create an object to use:
 	saturnV = SaturnV(m1,c1,b1,t1,m2,c2,b2,t2,m3,c3,b3,t3);
-	
+
 	#Time variable
-	t = 15;
+	t = 170; #Seconds
 
 	#Using the variables above with printouts:
 	mass_t = saturnV.calculateMass(t);
 	thrust_t = saturnV.calculateThrust(t)
 	print("The mass is: " + str(mass_t) + "kg")
-	print("The thrust is: " + str(thrust_t) + "m/s")
+	print("The thrust is: " + str(thrust_t) + "N")
 
 
 if __name__ == "__main__":
