@@ -73,7 +73,7 @@ class Orbit:
         self.mSol = m2 #Mass of sun
         self.mPlanet = m1 #Mass of planet
         self.state = np.asarray(init_state, dtype='float')
-        self.xy = [[0], [362570e3]]
+        self.xy = [[self.state[1]], [self.state[3]]]
 
     def position(self):
         """compute the current x,y positions of the pendulum arms"""
@@ -127,7 +127,7 @@ class Orbit:
 
 #List of all planets in the system
 # [t0,x0,vx0,y0,vx0]
-list = [Orbit([0.0,0.0, 1082, 362570e3, 0.0]),Orbit([0.0,0.0, 0.0, 0.0, 0.0])]
+list = [Orbit([0.0,0.0, 1.082e3, 362570e3, 0.0]),Orbit([0.0,0.0, 0.0, 0.0, 0.0])]
 planetz = np.array(list)
 
 #h=0.1; #Step size
@@ -168,6 +168,10 @@ def animate(i):
     #print(W)
     planetz[0].state = W
 
+    if ((W[1] > -1000000) and (W[1] < 1000000)):
+        print(W[1])
+        print(W[3])
+
     #NumericalSolver.step(planetz,dt)
 
     line1.set_data(*planetz[0].position()) #Green planet * operator means to take the array data x and y, and use them as parameters in the set_data function.
@@ -187,7 +191,7 @@ delay = 1000 * dt - (t1 - t0)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
-                        frames=1000, # total number of frames
+                        frames=1500, # total number of frames
                         interval=delay, # time to wait between each frame.
                         repeat=False,
                         blit=True,
