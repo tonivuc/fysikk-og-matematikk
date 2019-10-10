@@ -30,11 +30,10 @@ t3 = 1033100
 #Create an object to use:
 saturnV = SaturnV(m1,c1,b1,t1,m2,c2,b2,t2,m3,c3,b3,t3)
 
+time_stage_one = b1
+time_stage_two = b1 + b2
+
 def height(t, v):
-    if(t == 169):
-        print("speed: ", v[t])
-        print("speed0: ", v[t - 1])
-        print("res: ", (1/2)*(v[t] + v[t - 1])*t)
     return (1/2)*(v[t] + v[t - 1])*t
 
 def distance(t, v):
@@ -47,6 +46,7 @@ def Fs(t):
     return saturnV.calculateThrust(t)
 
 def Fg(t, v):
+    h = height(t, v)
     return gravity_constant * ((earth_mass * mass(t))/(distance(t, v)**2))
 
 def pressure(h):
@@ -66,9 +66,6 @@ def temperature(h):
         return 141.94 + (0.00299)*h
 
 def area(t):
-    time_stage_one = b1
-    time_stage_two = b1 + b2
-
     if t < time_stage_one:
         return area_stage_one
     elif t >= time_stage_one and t < time_stage_two:
@@ -76,15 +73,11 @@ def area(t):
     else:
         return area_stage_three
 
-def speed(t, a, v):#live on the edge monjaro is for fucks with no xXxskillzxXx mlg 1337
+def speed(t, a, v):
     return a[t - 1] + v[t - 1]
 
 def density(t, v):
     h = height(t, v)
-    if(t==169):
-        print("height: ", h)
-        print("temp: ", temperature(h))
-        print("pressure: ", pressure(h))
     return (pressure(h)/temperature(h)) * 3.4855
 
 def Fd(t, a, v):
@@ -92,44 +85,31 @@ def Fd(t, a, v):
 
 
 def main():
-    # Lav jordbane går cirka til 2000 kilometer
-    target_height = 2000000 # Målhøyde i meter
     # Antall tidstrinn
     steps = b1 + b2 + b3
 
-    # Lager tabellene med plassholdere
-    F = np.zeros(steps + 1)
-    a = np.zeros(steps + 1)
-    m = np.zeros(steps + 1)
-    v = np.zeros(steps + 1)
-    arr = np.zeros(steps + 1)
-    arr[0] = 0
     # Initialiserer startverdier
-    m[0] = mass(0)
-    v[0] = 0
-    # Tyngdekraften er betydelig større enn skyvekraften
-    F[0] = Fs(0) - gravity_constant * ((earth_mass * m[0])/(earth_radius**2))
-    a[0] = F[0] / m[0]
+    h = 1
+    F = []
+    a = []
+    m = []
+    v = []
+    m.append(mass(0))
+    v.append(0)
+    F.append(Fs(0) - gravity_constant * ((earth_mass * m[0])/(earth_radius**2)))
+    a.append(F[0] / m[0])
+    t = 1
+    while h >= 0:
+        v.append(speed(t, a, v))
+        F.append(Fs(t) - (Fg(t, v) + Fd(t, a, v)))
+        m.append(mass(t))
+        a.append(F[t] / m[t])
+        h = height(t, v)
+        plt.scatter(0, h)
+        plt.pause(0.05)
+        t = t + 1
+        print("Height: ", h)
 
-    for t in range(1, steps + 1):
-        arr[t] = t
-        v[t] = speed(t, a, v)
-        F[t] = Fs(t) - (Fg(t, v) + Fd(t, a, v))
-        m[t] = mass(t)
-        print("Second: ", t)
-        print("Air: ", Fd(t, a, v))
-        print("Gravity: ", Fg(t, v))
-        print("Forces: ", F[t])
-        print("Mass: ", m[t])
-        a[t] = F[t] / m[t]
-        print("accel: ", a[t])
-
-    print("ac: ", a[99])
-    print("speed: ", v[70])
-    print(height(steps, v))
-    print("Height in km: ", height(50, v)/1000)
-    print("DENSITY: ", (pressure(1500)/temperature(1500)) * 3.4855)
-    plt.scatter(arr, a)
     plt.show()
 
 if __name__ == "__main__":
