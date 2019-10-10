@@ -69,8 +69,6 @@ class SaturnV:
 			thrust = 0;
 		return thrust;
 
-	def getBurntime
-
 
 def main():
 	#Mass of different stages (kilograms)
