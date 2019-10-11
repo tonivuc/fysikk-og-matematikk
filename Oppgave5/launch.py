@@ -3,8 +3,6 @@ import math
 from SaturnV import SaturnV
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-from PIL import Image
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 earth_mass = 5.9736 * (10**24) # Jordens masse i kilogram
 earth_radius = (12756.28/2) * 1000 # Jordens radius ved ekvator i meter
@@ -87,26 +85,6 @@ def density(t, v):
 def Fd(t, a, v):
     return (1/2)*(1/2)*density(t, v)*area(t)*(speed(t, a, v)**2)
 
-
-def imscatter(x, y, image, ax=None, zoom=1):
-    if ax is None:
-        ax = plt.gca()
-    try:
-        image = plt.imread(image)
-    except TypeError:
-        # Likely already an array...
-        pass
-    im = OffsetImage(image, zoom=zoom)
-    x, y = np.atleast_1d(x, y)
-    artists = []
-    for x0, y0 in zip(x, y):
-        ab = AnnotationBbox(im, (x0, y0), xycoords='data', frameon=False)
-        artists.append(ax.add_artist(ab))
-    ax.update_datalim(np.column_stack([x, y]))
-    ax.autoscale()
-    return artists
-
-
 def main():
     # Antall tidstrinn
     steps = b1 + b2 + b3
@@ -143,7 +121,6 @@ def main():
         if last_h > h and not down:
             img_path = img_path_rocket_down
             down = True
-        img = OffsetImage(plt.imread(img_path))
         img = mpimg.imread(img_path)
         plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 200000])
         plt.pause(0.000000001)
