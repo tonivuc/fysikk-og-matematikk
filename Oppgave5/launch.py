@@ -120,6 +120,7 @@ def main():
     img_path_rocket_down = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/rocket_down.png'
     img_path_rocket_up_no_fuel = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/rocket_up_no_fuel.png'
     img_path_rocket_up = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/rocket_up.png'
+    img_path_explosion = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/explosion.png'
     img_path = img_path_rocket_up # Setter startbilde
 
     # Lister som skal brukes i kalkulasjonene
@@ -153,6 +154,12 @@ def main():
         h = height(t, v) # Regner ut den nye høyden fra overflaten
 
         plt.clf() # Fjerner tidligere plot
+        str = '\n'.join((
+            r'Fart=%.2f $\frac{m}{s}$' % (v[t], ),
+            r'Akselerasjon=%.2f $\frac{m}{s²}$' % (a[t], ),
+            r'Høyde=%.2f $m$' % (h, )))
+        props = dict(boxstyle='round', facecolor='blue', alpha=0.5)
+        plt.text(-475, 5750000, str, fontsize=10, verticalalignment='top', bbox=props)
         plt.xlim(-500, 500)
         plt.ylim(0, 6000000)
         plt.ylabel('Høyde (m)')
@@ -162,9 +169,11 @@ def main():
         if last_h > h and not down:
             img_path = img_path_rocket_down
             down = True
+        if h < 0:
+            img_path = img_path_explosion
         img = mpimg.imread(img_path)
         plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 200000])
-        plt.pause(0.000000001)
+        plt.pause(0.01)
         t = t + 1 # Videre til neste tidstrinn
 
     plt.show()
