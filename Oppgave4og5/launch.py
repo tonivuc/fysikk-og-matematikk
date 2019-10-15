@@ -77,7 +77,7 @@ def area(t):
         return area_stage_three
 
 def speed(t, a, v):#live on the edge monjaro is for fucks with no xXxskillzxXx mlg 1337
-    return a[t - 1] + v[t - 1]
+    return a[t - 1] + v[t - 1] #Akselerasjon fra forrige t + farten fra forrige. Mulig det er dette so skal brukes runge kutta på?
 
 def density(t, v):
     h = height(t, v)
