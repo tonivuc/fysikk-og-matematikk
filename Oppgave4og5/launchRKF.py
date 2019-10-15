@@ -85,13 +85,13 @@ class Orbit:
 
         F = saturnV.calculateThrust(t)
 
-        self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t)
+        self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
         z[2] = vy1
         z[3] = Fg_x
-        z[4] = (F - Fg_y - Fd)/saturnV.calculateMass(t)
+        z[4] = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
 
         self.xy[0].append(self.get_position()[0])
         self.xy[1].append(self.get_position()[1])
