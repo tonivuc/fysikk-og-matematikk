@@ -51,13 +51,11 @@ class SaturnV:
 			mass = self.step_three - ((t-(self.burn_one + self.burn_two))*(self.consumption_three));
 		else:
 			mass = self.step_three - ((self.burn_three)*(self.consumption_three));
-		#print("mass given t: ", mass)
+		print("mass given t: ", mass)
 		return mass
 
-	#Calculates the thrust of the rocket using the mass found in calculateMass at a certain time t
+	#Calculates the current thrust of the engines given a time t (in Newtons)
 	def calculateThrust(self, t):
-		#mass = self.calculateMass(t);
-		#print("mass: ", mass)
 		thrust = 0;
 		if t <= self.burn_one:
 			thrust = self.thrust_one;
@@ -67,6 +65,8 @@ class SaturnV:
 			thrust = self.thrust_three;
 		else:
 			thrust = 0;
+			
+		print('thrust', thrust)
 		return thrust;
 
 
