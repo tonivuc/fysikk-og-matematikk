@@ -27,7 +27,7 @@ t3 = 1033100;
 
 class Orbit:
 
-    def __init__(self,       
+    def __init__(self,
                  init_state = [0, 0, 1, 2, 0],
                  G=6.67e-11,
                  m=5.97e24):
@@ -38,8 +38,8 @@ class Orbit:
         self.acceleration = 0
 
     def position(self):
-        x = self.state[1] 
-        y = self.state[2] 
+        x = self.state[1]
+        y = self.state[2]
         return (x, y)
 
     def moh(self):
@@ -73,7 +73,7 @@ class Orbit:
         vx1 = x[3]
         vy1 = x[4]
         dist = np.sqrt((px2 - px1) ** 2 + (py2 - py1) ** 2)
-        
+
         # Force from gravity on rocket divided by rocket mass
         Fg_x = (Gm * (px2 - px1)) / (dist ** 3)
         Fg_y = (Gm * (py2 - py1)) / (dist ** 3)
@@ -85,7 +85,7 @@ class Orbit:
 
         F = saturnV.calculateThrust(t)
 
-        self.acceleration = (F - Fg_y - Fd)/saturnV.calculateMass(t)
+        self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t)
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
@@ -188,21 +188,23 @@ def init():
 
 def animate(i):
     """perform animation step"""
-    global dt, planetz, time_0, time_difference 
+    global dt, planetz, time_0, time_difference
     t0 = time_0
     time_1 = planetz[0].state[0]
     time_0 = time_1
     time_difference = time_1 - t0
     time_to_sleep = time_difference / dt - 1
+    """
     if time_to_sleep > 0:
         time.sleep(time_to_sleep * dt)
+    """
 
 
     W , E = rkf54.safeStep(planetz[0].state);
-    
+
     planetz[0].state = W
 
-    line1.set_data(*planetz[0].position()) 
+    line1.set_data(*planetz[0].position())
     line1_2.set_data(planetz[0].xy)
     line2.set_data([0, 406356640]) # moon position
     time_text.set_text('time = %.1f' % planetz[0].time_elapsed())
