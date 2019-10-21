@@ -21,9 +21,9 @@ c1 = 12857.1;
 c2 = 1266.9;
 c3 = 219;
 #Thrust of different stages (Newtons)
-t1 = 35100000;
-t2 = 5141000;
-t3 = 1033100;
+t1 = 1000000;
+t2 = 10;
+t3 = 10;
 
 class Orbit:
 
@@ -126,6 +126,8 @@ class Orbit:
 
         elif 25000 < h:  # Higher stratosphere
             return (2.488e3 * (self.get_temperature(h)/216.6)**(-11.388))
+        else:
+            return 101.29e3 * (self.get_temperature(h)/288.08)**5.256 #Not correct
 
 
     # Returns the air temperature in Kelvin based on height above sea level
@@ -139,6 +141,8 @@ class Orbit:
 
         elif 25000 < h:  # Higher stratosphere
             return (141.94 + 0.00299 * h)
+        else:
+            return 290.00 #Not correct, just to avoid returning null.
 
 
 #List of all planets in the system
