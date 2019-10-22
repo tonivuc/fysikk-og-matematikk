@@ -160,7 +160,7 @@ def main():
         else:
             F.append(-Fg(t, v) + Fd(t, a, v))
 
-        m.append(mass(t)) # Henter massen til raketten i nåværende tidstrinn
+        m.append(saturnV.massAddition()) # Henter massen til raketten i nåværende tidstrinn
         a.append(F[t] / m[t]) # Regner ut akselerasjonen i nåværende tidstrinn
         h = height(t, v) # Regner ut den nye høyden fra overflaten
 
@@ -171,10 +171,10 @@ def main():
             r'Fart: %.2f$\frac{m}{s}$' % (v[t], ),
             r'Akselerasjon: %.2f$\frac{m}{s²}$' % (a[t], )))
         props = dict(boxstyle='round', facecolor='blue', alpha=0.5)
-        plt.text(-475, 11800000, str, fontsize=10, verticalalignment='top', bbox=props)
+        plt.text(-475, 23800000, str, fontsize=10, verticalalignment='top', bbox=props)
         plt.xlim(-500, 500)
         plt.xlabel('Jordens overflate')
-        plt.ylim(0, 12000000)
+        plt.ylim(0, 24000000)
         plt.ylabel('Høyde (m)')
         # Endrer på bildet til figuren basert på om raketten er tom for drivstoff eller om den er på vei nedover
         if t > time_stage_three and not down:
@@ -185,7 +185,7 @@ def main():
         if h < 0:
             img_path = img_path_explosion
         img = mpimg.imread(img_path)
-        plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 600000])
+        plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 1000000])
         plt.pause(0.01)
         t = t + 1 # Videre til neste tidstrinn
 
