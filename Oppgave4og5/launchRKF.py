@@ -200,9 +200,9 @@ def animate(i):
     """
 
 
-    W , E = rkf54.safeStep(planetz[0].state);
+    W , E = rkf54.safeStep(planetz[0].state); #W includes new rocket position
 
-    planetz[0].state = W
+    planetz[0].state = W #Update position of rocket
 
     line1.set_data(*planetz[0].position())
     line1_2.set_data(planetz[0].xy)
