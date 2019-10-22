@@ -12,28 +12,32 @@ area_stage_three = 34.2 # Overflateområde steg en tre Saturn V
 num_height = 0 # Starthøyde
 num_distance = earth_radius # Avstand fra sentrum av jordkloden
 
-#Mass of different stages (kilograms)
-m1 = 2970000
-m2 = 680000
-m3 = 183000
 #Burn time of different stages (seconds)
 b1 = 168
 b2 = 360
 b3 = 165
+#Mass of different stages (kilograms)
+m1 = 130000
+m2 = 40100
+m3 = 13500
+#Fuel in different stages (kilograms)
+d1 = 2160000
+d2 = 456100
+d3 = 109500
 #Fuel consumption of different stages (kilograms per second)
 c1 = 12857.1
 c2 = 1266.9
 c3 = 219
 #Thrust of different stages (ts1 = thrust-sealevel-stage1, ts2 = thrust-vacuum-stage1) in newton
-ts1 = 38850000
-tv1 = 33850000
+ts1 = 33850000
+tv1 = 38850000
 ts2 = 2431000
 tv2 = 5165500
 ts3 = 486200
 tv3 = 1033100
 
 #Create an object to use:
-saturnV = SaturnV(m1,c1,b1,ts1,tv1,m2,c2,b2,ts2,tv2,m3,c3,b3,ts3,tv3)
+saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
 
 # Tiden hver motoravkopling oppstår (sekund)
 time_stage_one = b1
@@ -157,10 +161,6 @@ def main():
         a.append(F[t] / m[t]) # Regner ut akselerasjonen i nåværende tidstrinn
         h = height(t, v) # Regner ut den nye høyden fra overflaten
 
-        print("Tid: ", t)
-        print("Skyvekraft: ", Fs(t, v))
-        print("Trykk: ", pressure(h)/100)
-
         plt.clf() # Fjerner tidligere plot
         str = '\n'.join((
             r'Tid: %.2f$s$' % (t, ),
@@ -168,10 +168,10 @@ def main():
             r'Fart: %.2f$\frac{m}{s}$' % (v[t], ),
             r'Akselerasjon: %.2f$\frac{m}{s²}$' % (a[t], )))
         props = dict(boxstyle='round', facecolor='blue', alpha=0.5)
-        plt.text(-475, 5750000, str, fontsize=10, verticalalignment='top', bbox=props)
+        plt.text(-475, 11800000, str, fontsize=10, verticalalignment='top', bbox=props)
         plt.xlim(-500, 500)
         plt.xlabel('Jordens overflate')
-        plt.ylim(0, 6000000)
+        plt.ylim(0, 12000000)
         plt.ylabel('Høyde (m)')
         # Endrer på bildet til figuren basert på om raketten er tom for drivstoff eller om den er på vei nedover
         if t > time_stage_three and not down:
@@ -182,7 +182,7 @@ def main():
         if h < 0:
             img_path = img_path_explosion
         img = mpimg.imread(img_path)
-        plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 200000])
+        plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 600000])
         plt.pause(0.01)
         t = t + 1 # Videre til neste tidstrinn
 

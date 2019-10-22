@@ -39,6 +39,8 @@ class SaturnV:
 			return self.step_two + self.step_three + self.fuel_two + self.fuel_three
 		elif self.fuel_three > 0:
 			return self.step_three + self.fuel_three
+		else:
+			return self.step_three
 
 	#Calculates the mass of the rocket at a given time t
 	def calculateMass(self,t):
@@ -86,23 +88,6 @@ def main():
 
 	#Create an object to use:
 	saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
-
-	#Time variable
-	t = 0; #Seconds
-
-	#Using the variables above with printouts:
-	mass_t = saturnV.calculateMass(t)
-	thrust_t = saturnV.calculateThrust(t, 1)
-	print("The thrust is: " + str(thrust_t) + "N, and pressure: SL")
-	thrust_t = saturnV.calculateThrust(t, 0.75)
-	print("The thrust is: " + str(thrust_t) + "N, and pressure: 0.75SL")
-	thrust_t = saturnV.calculateThrust(t, 0.5)
-	print("The thrust is: " + str(thrust_t) + "N, and pressure: 0.5SL")
-	thrust_t = saturnV.calculateThrust(t, 0.25)
-	print("The thrust is: " + str(thrust_t) + "N, and pressure: 0.25SL")
-	thrust_t = saturnV.calculateThrust(t, 0)
-	print("The thrust is: " + str(thrust_t) + "N, and pressure: V")
-
 
 if __name__ == "__main__":
     # execute only if run as a script
