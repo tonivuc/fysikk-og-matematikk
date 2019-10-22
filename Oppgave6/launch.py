@@ -2,6 +2,7 @@ import math
 from SaturnV import SaturnV
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import os
 
 earth_mass = 5.9736 * (10**24) # Jordens masse i kilogram
 earth_radius = (12756.28/2) * 1000 # Jordens radius ved ekvator i meter
@@ -12,26 +13,32 @@ area_stage_three = 34.2 # Overflateområde steg en tre Saturn V
 num_height = 0 # Starthøyde
 num_distance = earth_radius # Avstand fra sentrum av jordkloden
 
-# Massen til de forskjellige trinnene under oppskytning (kilogram)
-m1 = 2970000
-m2 = 680000
-m3 = 183000
-
-# Forbrenningstid til de forskjellige trinnene (sekund)
+#Burn time of different stages (seconds)
 b1 = 168
 b2 = 360
 b3 = 165
-# Drivstofforbruk til de forskjellige trinnene (kilogram per sekund)
+#Mass of different stages (kilograms)
+m1 = 130000
+m2 = 40100
+m3 = 13500
+#Fuel in different stages (kilograms)
+d1 = 2160000
+d2 = 456100
+d3 = 109500
+#Fuel consumption of different stages (kilograms per second)
 c1 = 12857.1
 c2 = 1266.9
 c3 = 219
-# Skyvekraft til de forskjellige trinnene (Newton)
-t1 = 35100000
-t2 = 5141000
-t3 = 1033100
+#Thrust of different stages (ts1 = thrust-sealevel-stage1, ts2 = thrust-vacuum-stage1) in newton
+ts1 = 33850000
+tv1 = 38850000
+ts2 = 2431000
+tv2 = 5165500
+ts3 = 486200
+tv3 = 1033100
 
-# Skaper et objekt til bruk av funksjonene under:
-saturnV = SaturnV(m1,c1,b1,t1,m2,c2,b2,t2,m3,c3,b3,t3)
+#Create an object to use:
+saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
 
 # Tiden hver motoravkopling oppstår (sekund)
 time_stage_one = b1
@@ -42,6 +49,8 @@ time_stage_three = b1 + b2 + b3
 # Brukes til å posisjonere raketten og utregning av luftmotstand
 # Målenhet: Meter (m)
 def height(t, v):
+    if(v == 0):
+        return 0
     global num_height
     num_height = num_height + ((1/2)*(v[t] + v[t - 1]))
     return num_height
@@ -61,8 +70,8 @@ def mass(t):
 
 # Returnerer skyvekraften til raketten gitt et tidstrinn
 # Målenhet: Newton (N)
-def Fs(t):
-    return saturnV.calculateThrust(t)
+def Fs(t, v):
+    return saturnV.calculateThrust(t, pressure(height(t, v))/100)
 
 # Analytisk utregning av tyngdekraften mellom to legem
 # Brukes til å regne ut tyngdekraften mellom jordkloden og raketten
@@ -116,11 +125,13 @@ def Fd(t, a, v):
     return (1/2)*(1/2)*density(t, v)*area(t)*(speed(t, a, v)**2)
 
 def main():
+    script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+
     # Henter bildene til figuren
-    img_path_rocket_down = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/rocket_down.png'
-    img_path_rocket_up_no_fuel = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/rocket_up_no_fuel.png'
-    img_path_rocket_up = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/rocket_up.png'
-    img_path_explosion = '/home/vebovs/Desktop/fysikk-og-matematikk/Oppgave5/explosion.png'
+    img_path_rocket_down = os.path.join(script_dir, "../Oppgave4og5/rocket_down.png")
+    img_path_rocket_up_no_fuel = os.path.join(script_dir, "../Oppgave4og5/rocket_up_no_fuel.png")#'../Oppgave4og5/rocket_up_no_fuel.png'
+    img_path_rocket_up = os.path.join(script_dir, "../Oppgave4og5/rocket_up.png")#'../Oppgave4og5/rocket_up.png'
+    img_path_explosion = os.path.join(script_dir, "../Oppgave4og5/explosion.png")#'../Oppgave4og5/explosion.png'
     img_path = img_path_rocket_up # Setter startbilde
 
     # Lister som skal brukes i kalkulasjonene
@@ -131,7 +142,7 @@ def main():
     m.append(mass(0)) # Massen til raketten umiddelbart under oppskytning
     v.append(0) # Raketten har enda ikke noe fart ved t = 0
     # Regner ut summen av kreftene på raketten umiddelbart under oppskytning. Ingen luftmostanden siden v = 0
-    F.append(Fs(0) - gravity_constant * ((earth_mass * m[0])/(earth_radius**2)))
+    F.append(Fs(0, 0) - gravity_constant * ((earth_mass * m[0])/(earth_radius**2)))
     a.append(F[0] / m[0]) # Utregning av rakettens akselerasjon (F = ma)
 
     t = 1 # Tidstrinn i sekund
@@ -145,7 +156,7 @@ def main():
         # Er den positiv er raketten på vei opp. Er den negativ er raketten på vei ned.
         # Hvis raketten er på vei ned vil luftmotstanden virke på raketten med retning oppover, som er valgt til å være positiv retning
         if v[t] > 0 and not down:
-            F.append(Fs(t) - (Fg(t, v) + Fd(t, a, v)))
+            F.append(Fs(t, v) - (Fg(t, v) + Fd(t, a, v)))
         else:
             F.append(-Fg(t, v) + Fd(t, a, v))
 
@@ -160,10 +171,10 @@ def main():
             r'Fart: %.2f$\frac{m}{s}$' % (v[t], ),
             r'Akselerasjon: %.2f$\frac{m}{s²}$' % (a[t], )))
         props = dict(boxstyle='round', facecolor='blue', alpha=0.5)
-        plt.text(-475, 5750000, str, fontsize=10, verticalalignment='top', bbox=props)
+        plt.text(-475, 11800000, str, fontsize=10, verticalalignment='top', bbox=props)
         plt.xlim(-500, 500)
         plt.xlabel('Jordens overflate')
-        plt.ylim(0, 6000000)
+        plt.ylim(0, 12000000)
         plt.ylabel('Høyde (m)')
         # Endrer på bildet til figuren basert på om raketten er tom for drivstoff eller om den er på vei nedover
         if t > time_stage_three and not down:
@@ -174,7 +185,7 @@ def main():
         if h < 0:
             img_path = img_path_explosion
         img = mpimg.imread(img_path)
-        plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 200000])
+        plt.imshow(img, aspect = 'auto', extent = [-40, 40, h - 100000, h + 600000])
         plt.pause(0.01)
         t = t + 1 # Videre til neste tidstrinn
 
