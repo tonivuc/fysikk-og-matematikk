@@ -41,16 +41,18 @@ class RungeKuttaFehlberg54:
              Win):
         s=np.zeros((6,self.dim))
 
+
         #Calculate all 6 s-values/vectors
         for i in range(0,6):
-            s[i,:]=self.F(Win+self.h*self.A[i,0:i].dot(s[0:i,:]))
+            s[i,:],v[i,:] =self.F(Win+self.h*self.A[i,0:i].dot(s[0:i,:]))
             print(s[i,:])
 
         Zout=Win+self.h*(self.B[0,:].dot(s)); #In the book, Zout is better than Wout, given that Zout is the locally extrapolated version.
         Wout=Win+self.h*(self.B[1,:].dot(s));
 
         E=np.linalg.norm(Wout-Zout,2)/np.linalg.norm(Wout,2);
-        return Wout, E
+
+        return Wout, E, vOut
 
     def safeStep(self,
                  Win): #Win are the current approximations for y

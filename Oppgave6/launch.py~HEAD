@@ -12,26 +12,28 @@ area_stage_three = 34.2 # Overflateområde steg en tre Saturn V
 num_height = 0 # Starthøyde
 num_distance = earth_radius # Avstand fra sentrum av jordkloden
 
-# Massen til de forskjellige trinnene under oppskytning (kilogram)
+#Mass of different stages (kilograms)
 m1 = 2970000
 m2 = 680000
 m3 = 183000
-
-# Forbrenningstid til de forskjellige trinnene (sekund)
+#Burn time of different stages (seconds)
 b1 = 168
 b2 = 360
 b3 = 165
-# Drivstofforbruk til de forskjellige trinnene (kilogram per sekund)
+#Fuel consumption of different stages (kilograms per second)
 c1 = 12857.1
 c2 = 1266.9
 c3 = 219
-# Skyvekraft til de forskjellige trinnene (Newton)
-t1 = 35100000
-t2 = 5141000
-t3 = 1033100
+#Thrust of different stages (ts1 = thrust-sealevel-stage1, ts2 = thrust-vacuum-stage1) in newton
+ts1 = 38850000
+tv1 = 33850000
+ts2 = 2431000
+tv2 = 5165500
+ts3 = 486200
+tv3 = 1033100
 
-# Skaper et objekt til bruk av funksjonene under:
-saturnV = SaturnV(m1,c1,b1,t1,m2,c2,b2,t2,m3,c3,b3,t3)
+#Create an object to use:
+saturnV = SaturnV(m1,c1,b1,ts1,tv1,m2,c2,b2,ts2,tv2,m3,c3,b3,ts3,tv3)
 
 # Tiden hver motoravkopling oppstår (sekund)
 time_stage_one = b1
@@ -42,6 +44,8 @@ time_stage_three = b1 + b2 + b3
 # Brukes til å posisjonere raketten og utregning av luftmotstand
 # Målenhet: Meter (m)
 def height(t, v):
+    if(v == 0):
+        return 0
     global num_height
     num_height = num_height + ((1/2)*(v[t] + v[t - 1]))
     return num_height
@@ -61,8 +65,8 @@ def mass(t):
 
 # Returnerer skyvekraften til raketten gitt et tidstrinn
 # Målenhet: Newton (N)
-def Fs(t):
-    return saturnV.calculateThrust(t)
+def Fs(t, v):
+    return saturnV.calculateThrust(t, pressure(height(t, v))/100)
 
 # Analytisk utregning av tyngdekraften mellom to legem
 # Brukes til å regne ut tyngdekraften mellom jordkloden og raketten
@@ -131,7 +135,7 @@ def main():
     m.append(mass(0)) # Massen til raketten umiddelbart under oppskytning
     v.append(0) # Raketten har enda ikke noe fart ved t = 0
     # Regner ut summen av kreftene på raketten umiddelbart under oppskytning. Ingen luftmostanden siden v = 0
-    F.append(Fs(0) - gravity_constant * ((earth_mass * m[0])/(earth_radius**2)))
+    F.append(Fs(0, 0) - gravity_constant * ((earth_mass * m[0])/(earth_radius**2)))
     a.append(F[0] / m[0]) # Utregning av rakettens akselerasjon (F = ma)
 
     t = 1 # Tidstrinn i sekund
@@ -145,13 +149,17 @@ def main():
         # Er den positiv er raketten på vei opp. Er den negativ er raketten på vei ned.
         # Hvis raketten er på vei ned vil luftmotstanden virke på raketten med retning oppover, som er valgt til å være positiv retning
         if v[t] > 0 and not down:
-            F.append(Fs(t) - (Fg(t, v) + Fd(t, a, v)))
+            F.append(Fs(t, v) - (Fg(t, v) + Fd(t, a, v)))
         else:
             F.append(-Fg(t, v) + Fd(t, a, v))
         
         m.append(mass(t)) # Henter massen til raketten i nåværende tidstrinn
         a.append(F[t] / m[t]) # Regner ut akselerasjonen i nåværende tidstrinn
         h = height(t, v) # Regner ut den nye høyden fra overflaten
+
+        print("Tid: ", t)
+        print("Skyvekraft: ", Fs(t, v))
+        print("Trykk: ", pressure(h)/100)
 
         plt.clf() # Fjerner tidligere plot
         str = '\n'.join((

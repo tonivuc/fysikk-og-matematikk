@@ -12,7 +12,7 @@ class SaturnV:
 	consumption_three = 219;
 	burn_three = 500;
 	thrust_three = 1033100;
-	
+
 	# Init with all the necessary values
 	def __init__(self,
 				step_one,
@@ -51,13 +51,11 @@ class SaturnV:
 			mass = self.step_three - ((t-(self.burn_one + self.burn_two))*(self.consumption_three));
 		else:
 			mass = self.step_three - ((self.burn_three)*(self.consumption_three));
-		#print("mass given t: ", mass)
+		print("mass given t: ", mass)
 		return mass
 
-	#Calculates the thrust of the rocket using the mass found in calculateMass at a certain time t
+	#Calculates the current thrust of the engines given a time t (in Newtons)
 	def calculateThrust(self, t):
-		#mass = self.calculateMass(t);
-		#print("mass: ", mass)
 		thrust = 0;
 		if t <= self.burn_one:
 			thrust = self.thrust_one;
@@ -67,9 +65,11 @@ class SaturnV:
 			thrust = self.thrust_three;
 		else:
 			thrust = 0;
+			
+		print('thrust', thrust)
 		return thrust;
 
-			
+
 def main():
 	#Mass of different stages (kilograms)
 	m1 = 2970000;
@@ -90,15 +90,15 @@ def main():
 
 	#Create an object to use:
 	saturnV = SaturnV(m1,c1,b1,t1,m2,c2,b2,t2,m3,c3,b3,t3);
-	
+
 	#Time variable
-	t = 15;
+	t = 170; #Seconds
 
 	#Using the variables above with printouts:
 	mass_t = saturnV.calculateMass(t);
 	thrust_t = saturnV.calculateThrust(t)
 	print("The mass is: " + str(mass_t) + "kg")
-	print("The thrust is: " + str(thrust_t) + "m/s")
+	print("The thrust is: " + str(thrust_t) + "N")
 
 
 if __name__ == "__main__":
