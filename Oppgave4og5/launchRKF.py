@@ -4,6 +4,7 @@ from SaturnV import SaturnV
 import time
 
 import numpy as np
+import math
 
 import matplotlib.pyplot as plot
 import matplotlib.animation as animation
@@ -36,6 +37,9 @@ class Orbit:
         self.state = np.asarray(init_state, dtype='float')
         self.xy = [[0], [(12756.28/2) * 1000]]
         self.acceleration = 0
+        self.angle1 = math.pi/2
+        self.angle2 = 0
+        self.angle = 1.30
 
     def position(self):
         x = self.state[1]
@@ -85,13 +89,15 @@ class Orbit:
 
         F = saturnV.calculateThrust(t)
 
+        print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
+
         self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
         z[2] = vy1
-        z[3] = Fg_x
-        z[4] = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
+        z[3] = (F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))/saturnV.calculateMass(t)
+        z[4] = (F*math.sin(self.angle) + Fg_y - Fd*math.sin(self.angle))/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
 
         self.xy[0].append(self.get_position()[0])
         self.xy[1].append(self.get_position()[1])
@@ -160,7 +166,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-plotScale, plotScale), ylim=(-plotScale, plotScale * 3))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-plotScale, plotScale), ylim=(-plotScale, plotScale * 1.5))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
@@ -171,7 +177,7 @@ line1, = axes.plot([], [], 'o-g', linewidth=1, markersize=1)
 line1_2, = axes.plot([], [], 'r--', linewidth=0.5)
 line2, = axes.plot([], [], 'o-y', lw=2)
 time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
-position_text = axes.text(0.02, 0.85, '', transform=axes.transAxes)
+position_text = axes.text(0.02, 0.90, '', transform=axes.transAxes)
 acceleration_text = axes.text(0.02, 0.80, '', transform=axes.transAxes)
 
 def init():
@@ -200,16 +206,18 @@ def animate(i):
     """
 
 
-    W , E = rkf54.safeStep(planetz[0].state); #W includes new rocket position
+    W , E = rkf54.safeStep(planetz[0].state)
+    planetz[0].angle -= 0.0093
+    print('t')
 
-    planetz[0].state = W #Update position of rocket
+    planetz[0].state = W
 
     line1.set_data(*planetz[0].position())
     line1_2.set_data(planetz[0].xy)
     line2.set_data([0, 406356640]) # moon position
     time_text.set_text('time = %.1f' % planetz[0].time_elapsed())
     acceleration_text.set_text('Acceleration = %.3f m/s^2' % planetz[0].get_acceleration())
-    position_text.set_text('x = %.3f km' % (planetz[0].get_position()[0]) + ', y = %.3f km' % ((planetz[0].get_position()[1] - (12756.28/2) * 1000)/1e3))
+    position_text.set_text('x = %.3f km' % (planetz[0].get_position()[0]/1e3) + ', y = %.3f km' % ((planetz[0].get_position()[1] - (12756.28/2) * 1000)/1e3))
     return line1, line1_2, line2, time_text, position_text, acceleration_text
 
 
@@ -217,7 +225,7 @@ t0 = time.time()
 animate(0)
 time_1 = time.time()
 
-delay = 1000 * dt - (time_1 - t0)
+delay = 100 * dt - (time_1 - t0)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
