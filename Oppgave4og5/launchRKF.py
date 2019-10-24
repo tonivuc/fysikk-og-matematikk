@@ -34,6 +34,9 @@ tv2 = 5165500
 ts3 = 486200
 tv3 = 1033100
 
+saturnV2 = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
+mass = 0;
+
 class Orbit:
 
     def __init__(self,
@@ -85,25 +88,29 @@ class Orbit:
         vx1 = x[3]
         vy1 = x[4]
         dist = np.sqrt((px2 - px1) ** 2 + (py2 - py1) ** 2)
-        saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
+
+
 
         # Force from gravity on rocket divided by rocket mass
-        Fg_x = (Gm * saturnV.massAddition() *(px2 - px1)) / (dist ** 3)
-        Fg_y = (Gm * saturnV.massAddition() *(py2 - py1)) / (dist ** 3)
+        Fg_x = (Gm * saturnV2.massAddition() *(px2 - px1)) / (dist ** 3)
+        Fg_y = (Gm * saturnV2.massAddition() *(py2 - py1)) / (dist ** 3)
         # Force from air drag on rocket divided by rocket mass
         absolute_velocity = np.sqrt(vx1*vx1 + vy1*vy1)
         Fdx = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vx1)
         Fdy = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vy1)
 
-        F = saturnV.calculateThrust(t, self.get_air_pressure(self.moh())/100)
+        F = saturnV2.calculateThrust(t, self.get_air_pressure(self.moh())/100)
         #print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
 
         #self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
         #print("first ", (F*math.cos(self.angle)))
 
-        mass = saturnV.calculateMass(t)
 
-        self.acceleration = #math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
+        #print(fuel3)
+
+        self.acceleration = (F*math.sin(self.angle) + Fg_y - Fdy)/mass #math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
+        #print("F_y: "+str(F*math.sin(self.angle))+"Fg_y "+str(Fg_y)+" Fdy: "+str(Fdy)+" mass: "+str(mass))
+
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
@@ -217,26 +224,37 @@ def init():
     acceleration_text.set_text('')
     return line1, line1_2, line2, time_text, position_text, acceleration_text
 
-
+boolyboi = False
 
 def animate(i):
     """perform animation step"""
-    saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
-    global dt, planetz, time_0, time_difference
+    #saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
+    global dt, planetz, time_0, time_difference, mass, boolyboi
     t0 = time_0
     time_1 = planetz[0].state[0]
     time_0 = time_1
     time_difference = time_1 - t0
     time_to_sleep = time_difference / dt - 1
+
     """
     if time_to_sleep > 0:
         time.sleep(time_to_sleep * dt)
     """
+    startTime = planetz[0].state[0]
 
+    if (boolyboi == False):
+        mass = saturnV2.calculateMass(0) #Må kjøres før Runge Kutta
+        boolyboi = True
 
     W , E = rkf54.safeStep(planetz[0].state)
+
+    diff = W - planetz[0].state
+    print("Diff: ",diff)
+    diffTime = diff[0]
+    mass = saturnV2.calculateMass(diffTime)
+
     #planetz[0].angle -= 0.0001*5
-    if (saturnV.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
+    if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
         planetz[0].angle = math.pi/2 #- 0.00245*W[0]
 
     if(planetz[0].moh() > 185000 and planetz[0].moh() < 205000):
@@ -257,7 +275,7 @@ t0 = time.time()
 animate(0)
 time_1 = time.time()
 
-delay = 100 * dt - (time_1 - t0)
+delay = 1000 * dt - (time_1 - t0)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
