@@ -157,6 +157,7 @@ def main():
         # Hvis raketten er på vei ned vil luftmotstanden virke på raketten med retning oppover, som er valgt til å være positiv retning
         if v[t] > 0 and not down:
             F.append(Fs(t, v) - (Fg(t, v) + Fd(t, a, v)))
+            print("Skyvekraft: ", Fs(t, v))
         else:
             F.append(-Fg(t, v) + Fd(t, a, v))
 
