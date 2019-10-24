@@ -86,13 +86,17 @@ class Orbit:
         absolute_velocity = np.sqrt(vx1*vx1 + vy1*vy1)
         saturnV = SaturnV(m1,c1,b1,t1,m2,c2,b2,t2,m3,c3,b3,t3)
 
-        Fd_x = self.get_air_drag(self.moh(), 0.2, self.get_area(t), vx1) / saturnV.calculateMass(t)
-        Fd_y = self.get_air_drag(self.moh(), 0.2, self.get_area(t), vy1) / saturnV.calculateMass(t)
+        #Fd_x = self.get_air_drag(self.moh(), 0.2, self.get_area(t), vx1) / saturnV.calculateMass(t)
+        #Fd_y = self.get_air_drag(self.moh(), 0.2, self.get_area(t), vy1) / saturnV.calculateMass(t)
         Fd = self.get_air_drag(self.moh(), 0.2, self.get_area(t), absolute_velocity) / saturnV.calculateMass(t)
 
         F = saturnV.calculateThrust(t)
         print("vy1: "+str(vy1)+" vx1: "+str(vx1))
-        rocketAngle = math.tan(vy1/vx1)
+        if (vx1 == 0):
+            rocketAngle = math.pi/2
+        else:
+            rocketAngle = math.tan(vy1/vx1)
+        #print("rocketAngle: ",rocketAngle)
 
         #print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
 
@@ -102,8 +106,8 @@ class Orbit:
         z[0] = 1
         z[1] = vx1
         z[2] = vy1
-        z[3] = (F*math.cos(rocketAngle) + Fg_x - Fd_x)/saturnV.calculateMass(t)
-        z[4] = (F*math.sin(rocketAngle) + Fg_y - Fd_y)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
+        z[3] = (F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle) )/saturnV.calculateMass(t) #ax
+        z[4] = (F*math.sin(self.angle) + Fg_y - Fd*math.sin(self.angle))/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen ay
 
         self.xy[0].append(self.get_position()[0])
         self.xy[1].append(self.get_position()[1])
@@ -115,6 +119,9 @@ class Orbit:
 
 
     def get_air_resistance(self, h):
+        print("In get_air_resistance: h: ",h)
+        print("self.get_air_pressure: ",self.get_air_pressure(h))
+        print("self.get_temperature: ",self.get_temperature(h))
         return self.get_air_pressure(h) / self.get_temperature(h) * 3.4855
 
     def get_area(self, t):
@@ -138,6 +145,8 @@ class Orbit:
 
         elif 25000 < h:  # Higher stratosphere
             return (2.488e3 * (self.get_temperature(h)/216.6)**(-11.388))
+        else:
+            return 101.29e3
 
 
     # Returns the air temperature in Kelvin based on height above sea level
@@ -151,6 +160,8 @@ class Orbit:
 
         elif 25000 < h:  # Higher stratosphere
             return (141.94 + 0.00299 * h)
+        else:
+            return 288.19
 
 
 #List of all planets in the system
@@ -215,8 +226,8 @@ def animate(i):
     W , E = rkf54.safeStep(planetz[0].state)
     print("W: ")
     print(W)
-    planetz[0].angle -= 0.0093
-    print('t')
+    planetz[0].angle = math.pi/2 -0.006*W[0]
+    print('angle: ', planetz[0].angle)
 
     planetz[0].state = W
 
