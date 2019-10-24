@@ -272,6 +272,7 @@ def animate(i):
 def rungeKuttaRun(angle):
     global dt, planetz, time_0, time_difference, mass, boolyboi
     t0 = time_0
+    print(angle)
     time_1 = planetz[0].state[0]
     time_0 = time_1
     time_difference = time_1 - t0
@@ -281,25 +282,28 @@ def rungeKuttaRun(angle):
     if time_to_sleep > 0:
         time.sleep(time_to_sleep * dt)
     """
-    startTime = planetz[0].state[0]
 
-    if (boolyboi == False):
-        mass = saturnV2.calculateMass(0) #Må kjøres før Runge Kutta
-        boolyboi = True
+    while (planetz[0].moh() < 190000):  
+        startTime = planetz[0].state[0]
 
-    W , E = rkf54.safeStep(planetz[0].state)
+        if (boolyboi == False):
+            mass = saturnV2.calculateMass(0) #Må kjøres før Runge Kutta
+            boolyboi = True
 
-    diff = W - planetz[0].state
-    diffTime = diff[0]
-    mass = saturnV2.calculateMass(diffTime)
+        W , E = rkf54.safeStep(planetz[0].state)
 
-    #planetz[0].angle -= 0.0001*5
-    if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        planetz[0].angle = math.pi/2 - angle*W[0]
+        planetz[0].state = W
 
-    if(planetz[0].moh() > 190000):
-        return W[0]
-        print("Time: ", W[0])
+        diff = W - planetz[0].state
+        diffTime = diff[0]
+        mass = saturnV2.calculateMass(diffTime)
+
+        #planetz[0].angle -= 0.0001*5
+        if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
+            planetz[0].angle = math.pi/2 - angle*W[0]
+
+    print("Time: ", planetz[0].state[0])
+    return planetz[0].state[0]
 
 
 def main():
@@ -307,10 +311,11 @@ def main():
     goal = 720
     lower_t = 0
     higher_t = 0
-    lower_a = 0
+    lower_a = 0.0
     higher_a = 0.1
 
     lower_t = rungeKuttaRun(lower_a)
+
     print(lower_t)
 
 main()
