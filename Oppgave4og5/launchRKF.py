@@ -12,7 +12,7 @@ import matplotlib.animation as animation
 #Mass of different stages (kilograms)
 m1 = 2970000;
 m2 = 680000;
-m3 = 183000;
+m3 = 183000; #Denne er for lav, må ha payload
 #Burn time of different stages (seconds)
 b1 = 168;
 b2 = 360;
@@ -79,25 +79,31 @@ class Orbit:
         dist = np.sqrt((px2 - px1) ** 2 + (py2 - py1) ** 2)
 
         # Force from gravity on rocket divided by rocket mass
-        Fg_x = (Gm * (px2 - px1)) / (dist ** 3)
+        Fg_x = (Gm * (px2 - px1)) / (dist ** 3) #Does not calculate both masses
         Fg_y = (Gm * (py2 - py1)) / (dist ** 3)
 
         # Force from air drag on rocket divided by rocket mass
         absolute_velocity = np.sqrt(vx1*vx1 + vy1*vy1)
         saturnV = SaturnV(m1,c1,b1,t1,m2,c2,b2,t2,m3,c3,b3,t3)
+
+        Fd_x = self.get_air_drag(self.moh(), 0.2, self.get_area(t), vx1) / saturnV.calculateMass(t)
+        Fd_y = self.get_air_drag(self.moh(), 0.2, self.get_area(t), vy1) / saturnV.calculateMass(t)
         Fd = self.get_air_drag(self.moh(), 0.2, self.get_area(t), absolute_velocity) / saturnV.calculateMass(t)
 
         F = saturnV.calculateThrust(t)
+        print("vy1: "+str(vy1)+" vx1: "+str(vx1))
+        rocketAngle = math.tan(vy1/vx1)
 
-        print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
+        #print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
 
         self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
+
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
         z[2] = vy1
-        z[3] = (F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))/saturnV.calculateMass(t)
-        z[4] = (F*math.sin(self.angle) + Fg_y - Fd*math.sin(self.angle))/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
+        z[3] = (F*math.cos(rocketAngle) + Fg_x - Fd_x)/saturnV.calculateMass(t)
+        z[4] = (F*math.sin(rocketAngle) + Fg_y - Fd_y)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
 
         self.xy[0].append(self.get_position()[0])
         self.xy[1].append(self.get_position()[1])
@@ -205,8 +211,10 @@ def animate(i):
         time.sleep(time_to_sleep * dt)
     """
 
-
+    print("Test")
     W , E = rkf54.safeStep(planetz[0].state)
+    print("W: ")
+    print(W)
     planetz[0].angle -= 0.0093
     print('t')
 
