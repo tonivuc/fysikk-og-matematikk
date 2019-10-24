@@ -101,13 +101,15 @@ class Orbit:
         #self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
         #print("first ", (F*math.cos(self.angle)))
 
-        #self.acceleration = math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
+        mass = saturnV.calculateMass(t)
+
+        self.acceleration = #math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
         z[2] = vy1
-        z[3] = (F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)
-        z[4] = (F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition() #Merk fortegnene inne i ligningen
+        z[3] = (F*math.cos(self.angle) + Fg_x - Fdx)/mass
+        z[4] = (F*math.sin(self.angle) + Fg_y - Fdy)/mass #Merk fortegnene inne i ligningen
 
         self.xy[0].append(self.get_position()[0])
         self.xy[1].append(self.get_position()[1])
@@ -191,7 +193,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-15*plotScale, plotScale*15), ylim=(-15*plotScale, plotScale * 15.5))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-1*plotScale, plotScale*1), ylim=(-0*plotScale, plotScale * 1.5))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
@@ -235,7 +237,7 @@ def animate(i):
     W , E = rkf54.safeStep(planetz[0].state)
     #planetz[0].angle -= 0.0001*5
     if (saturnV.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        planetz[0].angle = math.pi/2 - 0.00245*W[0]
+        planetz[0].angle = math.pi/2 #- 0.00245*W[0]
 
     if(planetz[0].moh() > 185000 and planetz[0].moh() < 205000):
         print("Time: ", W[0])
