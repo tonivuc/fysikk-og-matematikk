@@ -102,14 +102,10 @@ class Orbit:
         F = saturnV2.calculateThrust(t, self.get_air_pressure(self.moh())/100)
         #print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
 
-        #self.acceleration = (F + Fg_y - Fd)/saturnV.calculateMass(t) #Merk fortegnene inne i ligningen
-        #print("first ", (F*math.cos(self.angle)))
-
-
-        #print(fuel3)
-
         self.acceleration = (F*math.sin(self.angle) + Fg_y - Fdy)/mass #math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
         #print("F_y: "+str(F*math.sin(self.angle))+"Fg_y "+str(Fg_y)+" Fdy: "+str(Fdy)+" mass: "+str(mass))
+
+        #self.acceleration = math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
 
         z = np.zeros(5)
         z[0] = 1
