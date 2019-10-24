@@ -200,7 +200,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-5*plotScale, plotScale*5), ylim=(-5*plotScale, plotScale * 5))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-3*plotScale, plotScale*3), ylim=(-3*plotScale, plotScale * 3))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
