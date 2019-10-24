@@ -200,7 +200,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-1*plotScale, plotScale*1), ylim=(-0*plotScale, plotScale * 1.5))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-5*plotScale, plotScale*5), ylim=(-5*plotScale, plotScale * 5))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
@@ -249,13 +249,12 @@ def animate(i):
     W , E = rkf54.safeStep(planetz[0].state)
 
     diff = W - planetz[0].state
-    print("Diff: ",diff)
     diffTime = diff[0]
     mass = saturnV2.calculateMass(diffTime)
 
     #planetz[0].angle -= 0.0001*5
     if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        planetz[0].angle = math.pi/2 #- 0.00245*W[0]
+        planetz[0].angle = math.pi/2 - 0.00245*W[0]
 
     if(planetz[0].moh() > 185000 and planetz[0].moh() < 205000):
         print("Time: ", W[0])
@@ -270,27 +269,54 @@ def animate(i):
     position_text.set_text('x = %.3f km' % (planetz[0].get_position()[0]/1e3) + ', y = %.3f km' % ((planetz[0].get_position()[1] - (12756.28/2) * 1000)/1e3))
     return line1, line1_2, line2, time_text, position_text, acceleration_text
 
+def rungeKuttaRun(angle):
+    global dt, planetz, time_0, time_difference, mass, boolyboi
+    t0 = time_0
+    time_1 = planetz[0].state[0]
+    time_0 = time_1
+    time_difference = time_1 - t0
+    time_to_sleep = time_difference / dt - 1
+
+    """
+    if time_to_sleep > 0:
+        time.sleep(time_to_sleep * dt)
+    """
+    startTime = planetz[0].state[0]
+
+    if (boolyboi == False):
+        mass = saturnV2.calculateMass(0) #Må kjøres før Runge Kutta
+        boolyboi = True
+
+    W , E = rkf54.safeStep(planetz[0].state)
+
+    diff = W - planetz[0].state
+    diffTime = diff[0]
+    mass = saturnV2.calculateMass(diffTime)
+
+    #planetz[0].angle -= 0.0001*5
+    if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
+        planetz[0].angle = math.pi/2 - angle*W[0]
+
+    if(planetz[0].moh() > 190000):
+        return W[0]
+        print("Time: ", W[0])
+
+
+def main():
+    tol = 20
+    goal = 720
+    lower_t = 0
+    higher_t = 0
+    lower_a = 0
+    higher_a = 0.1
+
+    lower_t = rungeKuttaRun(lower_a)
+    print(lower_t)
+
+main()
 
 t0 = time.time()
 animate(0)
 time_1 = time.time()
 
 delay = 1000 * dt - (time_1 - t0)
-
-anim=animation.FuncAnimation(fig,        # figure to plot in
-                        animate,    # function that is called on each frame
-                        frames=15000, # total number of frames
-                        interval=delay, # time to wait between each frame.
-                        repeat=False,
-                        blit=True,
-                        init_func=init # initialization
-                        )
-
-# save the animation as an mp4.  This requires ffmpeg or mencoder to be
-# installed.  The extra_args ensure that the x264 codec is used, so that
-# the video can be embedded in html5.  You may need to adjust this for
-# your system: for more information, see
-# http://matplotlib.sourceforge.net/api/animation_api.html
-#anim.save('orbit.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
-
-plot.show()
