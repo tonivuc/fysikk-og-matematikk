@@ -160,6 +160,17 @@ class Orbit:
         else:
             return 288.19
 
+    def get_angle_relative_to_start(self):
+        return math.pi/2 + self.angle
+
+    def get_angle_relative_to_earth_center(self):
+        positionVector = self.get_position()
+        if (positionVector[0] != 0):
+            rocketAngle = math.tan(positionVector[1]/positionVector[0])
+        else:
+            rocketAngle = math.pi/2
+        return rocketAngle
+
 
 #List of all planets in the system
 list = [Orbit([0.0, 0.0,  (12756.28/2) * 1000, 0, 0.0]),Orbit([0.0,0.0, 0.0, 0.0, 0.0])]
@@ -225,7 +236,7 @@ def animate(i):
     #planetz[0].angle -= 0.0001*5
     if (saturnV.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
         planetz[0].angle = math.pi/2 - 0.00245*W[0]
-        
+
     if(planetz[0].moh() > 185000 and planetz[0].moh() < 205000):
         print("Time: ", W[0])
 
