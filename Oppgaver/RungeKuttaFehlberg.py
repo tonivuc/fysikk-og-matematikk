@@ -88,17 +88,19 @@ class RungeKuttaFehlberg54:
         self.h=stepLength;        
         
 def F(Y):
+    # The system of equations that we want to solve
     res = np.zeros(3)
-    res[0] = 1
-    res[1] = Y[1] + Y[2]
-    res[2] = -Y[1] + Y[2]
-    return res;
+    res[0] = 1 # time
+    res[1] = Y[1] + Y[2] #Y1'
+    res[2] = -Y[1] + Y[2] #Y2'
+    return res
 
 def main():
-    W=np.array([0, 1, 0]);
-    h=0.25;
-    tol=02e-14;
-    tEnd=1.0;
+    W=np.array([0, 1, 0]) #Initial values 
+    h=0.25
+    tol=02e-14
+    tEnd=1.0
+    
     rkf54 = RungeKuttaFehlberg54(F,3,h,tol)
 
     while(W[0]<tEnd):
