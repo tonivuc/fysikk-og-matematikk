@@ -66,10 +66,13 @@ class SaturnV:
 		return thrust
 
 def main():
+
+	#m1 + m2 + m3 + d1 + d2 + d3 = 2.970.000kg
+
 	#Mass of different stages (kilograms)
 	m1 = 130000
 	m2 = 40100
-	m3 = 13500
+	m3 = 13500 + 60800 #60800 is the payload weight that needs to be carried along with the third stage
 	#Fuel in different stages (kilograms)
 	d1 = 2160000
 	d2 = 456100
