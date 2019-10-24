@@ -102,12 +102,14 @@ class Orbit:
         #print("first ", (F*math.cos(self.angle)))
 
         #self.acceleration = math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
+
+        rocketMass = saturnV.calculateMass(t)
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
         z[2] = vy1
-        z[3] = (F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)
-        z[4] = (F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition() #Merk fortegnene inne i ligningen
+        z[3] = (F*math.cos(self.angle) + Fg_x - Fdx)/rocketMass
+        z[4] = (F*math.sin(self.angle) + Fg_y - Fdy)/rocketMass #Merk fortegnene inne i ligningen
 
         self.xy[0].append(self.get_position()[0])
         self.xy[1].append(self.get_position()[1])
