@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Oppgave 2
+
 Created on Thu Aug 30 20:26:05 2018
 
 @author: rivertz
+
 """
 
 import numpy as np
-import math as m 
+import math as m
 import sys
 import time
 import matplotlib.pyplot as plot
@@ -21,7 +24,7 @@ class RungeKuttaFehlberg54:
          [1932/2197,-7200/2197, 7296/2197 ,    0     ,  0   ,0],
          [ 439/216 ,   -8     , 3680/513  , -845/4104,  0   ,0],
          [  -8/27  ,    2     ,-3544/2565 , 1859/4104,-11/40,0]])
-  
+
     B=np.array(
         [[  25/216 ,    0     , 1408/2565 , 2197/4104 ,-1/5 ,0],
          [  16/135 ,    0     , 6656/12825,28561/56430,-9/50,2/55]]);
@@ -35,11 +38,11 @@ class RungeKuttaFehlberg54:
         self.dim=dimension;
         self.h=stepsize;
         self.tol=tolerance;
-    
+
     def step(self,
              Win):
         s=np.zeros((6,self.dim))
-        
+
         for i in range(0,6):
             s[i,:]=self.F(Win+self.h*self.A[i,0:i].dot(s[0:i,:]))
 
@@ -60,13 +63,13 @@ class RungeKuttaFehlberg54:
         # If the error is still not tolerable
         counter=0;
         while(not self.isErrorTolerated(E)):
-            #Try if dividing the steplength with 2 helps. 
+            #Try if dividing the steplength with 2 helps.
             self.divideStepByTwo();
             Wout,E = self.step(Win);
             counter = counter + 1;
             if(counter>10):
                 sys.exit(-1);
-            
+
         self.adjustStep(E);
         self.localError += E;
         return Wout, E
@@ -83,10 +86,10 @@ class RungeKuttaFehlberg54:
 
     def divideStepByTwo(self):
         self.h=self.h/2;
-        
+
     def setStepLength(self,stepLength):
-        self.h=stepLength;        
-        
+        self.h=stepLength;
+
 def F(Y):
     # The system of equations that we want to solve
     res = np.zeros(3)
@@ -96,16 +99,16 @@ def F(Y):
     return res
 
 def main():
-    W=np.array([0, 1, 0]) #Initial values 
+    W=np.array([0, 1, 0]) #Initial values
     h=0.25
     tol=02e-14
     tEnd=1.0
-    
+
     rkf54 = RungeKuttaFehlberg54(F,3,h,tol)
 
     while(W[0]<tEnd):
         W , E = rkf54.safeStep(W);
-        
+
     rkf54.setStepLength(tEnd-W[0]);
     W,E = rkf54.step(W);
 
@@ -124,7 +127,7 @@ def main():
         start_time = time.time()
         while(W[0]<tEnd):
             W , E = rkf54.safeStep(W);
-            
+
         rkf54.setStepLength(tEnd-W[0]);
         W,E = rkf54.step(W);
         stop_time = time.time()
@@ -133,7 +136,7 @@ def main():
         print("tid: ", stop_time-start_time);
 
         tol *= 5;
-    
+
     plot.loglog(toleranser, beregningstid)
     plot.xlabel("Toleranse")
     plot.ylabel("Modeltid/beregningstid")
@@ -149,7 +152,7 @@ def correctSolution(tEnd) :
     y[1] = m.pow(m.e, tEnd)*m.cos(tEnd);
     y[2] = -m.pow(m.e, tEnd)*m.sin(tEnd);
     return y;
-    
+
 if __name__ == "__main__":
     # execute only if run as a script
     main()

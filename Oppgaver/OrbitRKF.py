@@ -9,6 +9,8 @@ import matplotlib.animation as animation
 
 class Orbit:
     """
+    Oppgave 3
+
     Orbit Class
 
     Original init-state: init_state = [0, 0, 1, 2, 0],
@@ -36,10 +38,10 @@ class Orbit:
         return (x, y)
 
     def energy(self):
-        x = self.state[1] 
-        y = self.state[3] 
-        vx = self.state[2] 
-        vy = self.state[4] 
+        x = self.state[1]
+        y = self.state[3]
+        vx = self.state[2]
+        vy = self.state[4]
         m1 = self.mMoon
         m2 = self.mEarth
         G = self.GravConst
@@ -57,9 +59,9 @@ class Orbit:
 
         px2=0
         py2=0 #Position of the centre of earth.
-        px1=x[1] 
-        py1=x[3] 
-        vx1=x[2] 
+        px1=x[1]
+        py1=x[3]
+        vx1=x[2]
         vy1=x[4]
         dist=np.sqrt((px2-px1)**2+(py2-py1)**2) #Calculates distance from the moon to the earth
         z=np.zeros(5);
@@ -72,7 +74,7 @@ class Orbit:
 
         self.xy[0].append(self.position()[0])
         self.xy[1].append(self.position()[1])
-        return z 
+        return z
 
 
 #List of all planets in the system
@@ -96,7 +98,7 @@ time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
 position_text = axes.text(0.02, 0.85, '', transform=axes.transAxes)
 
 def init():
-    """initialize animation""" 
+    """initialize animation"""
     line1.set_data([], [])
     line1_2.set_data([], [])
     line2.set_data([], [])
@@ -132,10 +134,10 @@ t1 = time.time()
 
 delay = 1000 * dt - (t1 - t0)
 
-anim=animation.FuncAnimation(fig,   
-                        animate,    
-                        frames=1500, 
-                        interval=delay, 
+anim=animation.FuncAnimation(fig,
+                        animate,
+                        frames=1500,
+                        interval=delay,
                         repeat=False,
                         blit=True,
                         init_func=init
