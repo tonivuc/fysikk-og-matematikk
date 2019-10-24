@@ -200,7 +200,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-1*plotScale, plotScale*1), ylim=(-0*plotScale, plotScale * 1.5))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-3*plotScale, plotScale*3), ylim=(-3*plotScale, plotScale * 3))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
@@ -275,7 +275,7 @@ t0 = time.time()
 animate(0)
 time_1 = time.time()
 
-delay = 1000 * dt - (time_1 - t0)
+delay = 1 * dt - (time_1 - t0)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
