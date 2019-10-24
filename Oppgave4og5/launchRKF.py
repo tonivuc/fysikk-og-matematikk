@@ -200,7 +200,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-3*plotScale, plotScale*3), ylim=(-3*plotScale, plotScale * 3))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-2*plotScale, plotScale*2), ylim=(-2*plotScale, plotScale * 2.5))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
@@ -227,6 +227,9 @@ def init():
 boolyboi = False
 
 def animate(i):
+
+
+
     """perform animation step"""
     #saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
     global dt, planetz, time_0, time_difference, mass, boolyboi
@@ -249,15 +252,14 @@ def animate(i):
     W , E = rkf54.safeStep(planetz[0].state)
 
     diff = W - planetz[0].state
-    print("Diff: ",diff)
     diffTime = diff[0]
     mass = saturnV2.calculateMass(diffTime)
 
     #planetz[0].angle -= 0.0001*5
     if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        planetz[0].angle = math.pi/2 #- 0.00245*W[0]
+        planetz[0].angle = math.pi/2 -0.00235*W[0]
 
-    if(planetz[0].moh() > 185000 and planetz[0].moh() < 205000):
+    if(planetz[0].moh() > 190000 and planetz[0].moh() < 205000):
         print("Time: ", W[0])
 
     planetz[0].state = W
@@ -266,7 +268,7 @@ def animate(i):
     line1_2.set_data(planetz[0].xy)
     line2.set_data([0, 406356640]) # moon position
     time_text.set_text('time = %.1f' % planetz[0].time_elapsed())
-    acceleration_text.set_text('Acceleration = %.3f m/s^2' % planetz[0].get_acceleration())
+    acceleration_text.set_text('Acceleration y = %.3f m/s^2' % planetz[0].get_acceleration())
     position_text.set_text('x = %.3f km' % (planetz[0].get_position()[0]/1e3) + ', y = %.3f km' % ((planetz[0].get_position()[1] - (12756.28/2) * 1000)/1e3))
     return line1, line1_2, line2, time_text, position_text, acceleration_text
 
