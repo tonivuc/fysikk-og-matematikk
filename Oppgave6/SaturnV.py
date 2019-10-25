@@ -15,7 +15,8 @@ class SaturnV:
 				consumption_three,
 				fuel_three,
 				thrust_sea_three,
-				thrust_vac_three):
+				thrust_vac_three,
+				engine_cutoff_time=999999999999999999999999999999999):
 		self.step_one = step_one
 		self.consumption_one=consumption_one
 		self.fuel_one=fuel_one
@@ -31,6 +32,7 @@ class SaturnV:
 		self.fuel_three=fuel_three
 		self.thrust_sea_three=thrust_sea_three
 		self.thrust_vac_three=thrust_vac_three
+		self.engine_cutoff_time=engine_cutoff_time
 
 	def massAddition(self):
 		if self.fuel_one > 0:
@@ -45,16 +47,16 @@ class SaturnV:
 	#Calculates the mass of the rocket at a given time t
 	def calculateMass(self,t):
 		if 0 < self.fuel_one:
-			self.fuel_one -= self.consumption_one
+			self.fuel_one -= self.consumption_one*t
 		elif 0 < self.fuel_two:
-			self.fuel_two -= self.consumption_two
+			self.fuel_two -= self.consumption_two*t
 		elif 0 < self.fuel_three:
-			self.fuel_three -= self.consumption_three
+			self.fuel_three -= self.consumption_three*t
 		return (self.massAddition())
 
 	#Calculates the thrust of the rocket given atmospheric pressure and time (to get more accurate information)
 	def calculateThrust(self, t, p):
-		if (t > 973):#973):
+		if (t > self.engine_cutoff_time):#973):
 			return 0
 		thrust = 0
 		if self.fuel_one > 0:
