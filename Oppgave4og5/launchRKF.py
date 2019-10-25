@@ -77,6 +77,28 @@ class Orbit:
     def get_position(self):
         return [self.state[1], self.state[2]]
 
+
+    def normalize(self,v):
+        norm = np.linalg.norm(v)
+        if (norm == 0):
+            return v
+        return v/norm
+
+    def scalarTowardsEarth(self,v_x, v_y, rocketx, rockety):
+        position = np.array([-rocketx,-rockety])
+        position = self.normalize(position)
+        speed = np.array([v_x,v_y])
+        speed = self.normalize(speed)
+        res = np.dot(speed, position)
+        return res
+
+    def isGoingTowardsEarth(self,v_x, v_y, rocketx, rockety):
+        res = self.scalarTowardsEarth(v_x, v_y, rocketx, rockety)
+        if (res <= 0):
+            return 1
+        else:
+            return -1
+
     def ydot(self, x):
         G = self.GravConst
         Gm = G * self.m
@@ -89,15 +111,13 @@ class Orbit:
         vy1 = x[4]
         dist = np.sqrt((px2 - px1) ** 2 + (py2 - py1) ** 2)
 
-
-
         # Force from gravity on rocket divided by rocket mass
         Fg_x = (Gm * saturnV2.massAddition() *(px2 - px1)) / (dist ** 3)
         Fg_y = (Gm * saturnV2.massAddition() *(py2 - py1)) / (dist ** 3)
         # Force from air drag on rocket divided by rocket mass
         absolute_velocity = np.sqrt(vx1*vx1 + vy1*vy1)
-        Fdx = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vx1)
-        Fdy = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vy1)
+        Fdx = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vx1)*self.isGoingTowardsEarth(vx1,vy1,px1,py1) #Brukes for å endre kraftens fortegn
+        Fdy = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vy1)*self.isGoingTowardsEarth(vx1,vy1,px1,py1)
 
         F = saturnV2.calculateThrust(t, self.get_air_pressure(self.moh())/100)
         #print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
@@ -196,7 +216,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-2*plotScale, plotScale*2), ylim=(-2*plotScale, plotScale * 2.5))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-1*plotScale, plotScale*1), ylim=(-0*plotScale, plotScale * 2.2))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
@@ -245,15 +265,18 @@ def animate(i):
         mass = saturnV2.calculateMass(0) #Må kjøres før Runge Kutta
         boolyboi = True
 
+    print("planetz[0].state: ",planetz[0].state)
+    print("Moh (km): ",planetz[0].moh()/1000)
+    print("akselerasjon: ",planetz[0].acceleration)
     W , E = rkf54.safeStep(planetz[0].state)
 
     diff = W - planetz[0].state
     diffTime = diff[0]
     mass = saturnV2.calculateMass(diffTime)
 
-    #planetz[0].angle -= 0.0001*5
     if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        planetz[0].angle = math.pi/2 -0.00235*W[0]
+        #planetz[0].angle = math.pi/2 -0.00235*W[0]
+        planetz[0].angle = math.pi/2
 
     if(planetz[0].moh() > 190000 and planetz[0].moh() < 205000):
         print("Time: ", W[0])
@@ -273,7 +296,7 @@ t0 = time.time()
 animate(0)
 time_1 = time.time()
 
-delay = 1 * dt - (time_1 - t0)
+delay = 30 * dt - (time_1 - t0)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
