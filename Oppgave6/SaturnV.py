@@ -70,9 +70,6 @@ class SaturnV:
 		return thrust
 
 def main():
-
-	#m1 + m2 + m3 + d1 + d2 + d3 = 2.970.000kg
-
 	#Mass of different stages (kilograms)
 	m1 = 130000
 	m2 = 40100

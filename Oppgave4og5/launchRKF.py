@@ -115,24 +115,19 @@ class Orbit:
         Fg_x = (Gm * saturnV2.massAddition() *(px2 - px1)) / (dist ** 3)
         Fg_y = (Gm * saturnV2.massAddition() *(py2 - py1)) / (dist ** 3)
         # Force from air drag on rocket divided by rocket mass
-        absolute_velocity = np.sqrt(vx1*vx1 + vy1*vy1)
-        Fdx = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vx1)*self.isGoingTowardsEarth(vx1,vy1,px1,py1) #Brukes for å endre kraftens fortegn
+        Fdx = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vx1)*self.isGoingTowardsEarth(vx1,vy1,px1,py1)
         Fdy = self.get_air_drag(self.moh(), 0.5, self.get_area(t), vy1)*self.isGoingTowardsEarth(vx1,vy1,px1,py1)
 
         F = saturnV2.calculateThrust(t, self.get_air_pressure(self.moh())/100)
-        #print(math.cos(self.angle), F*math.cos(self.angle) + Fg_x - Fd*math.cos(self.angle))
 
-        self.acceleration = (F*math.sin(self.angle) + Fg_y - Fdy)/mass #math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
-        #print("F_y: "+str(F*math.sin(self.angle))+"Fg_y "+str(Fg_y)+" Fdy: "+str(Fdy)+" mass: "+str(mass))
-
-        #self.acceleration = math.sqrt(((F*math.cos(self.angle) + Fg_x - Fdx)/saturnV.calculateMass(t)**2) + ((F*math.sin(self.angle) + Fg_y - Fdy)/saturnV.massAddition()**2))
+        self.acceleration = (F*math.sin(self.angle) + Fg_y - Fdy)/mass 
 
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
         z[2] = vy1
         z[3] = (F*math.cos(self.angle) + Fg_x - Fdx)/mass
-        z[4] = (F*math.sin(self.angle) + Fg_y - Fdy)/mass #Merk fortegnene inne i ligningen
+        z[4] = (F*math.sin(self.angle) + Fg_y - Fdy)/mass 
 
         self.xy[0].append(self.get_position()[0])
         self.xy[1].append(self.get_position()[1])
@@ -205,7 +200,6 @@ planetz = np.array(list)
 tol=02e-14
 animation_time = 0
 time_0 = 0
-time_difference = 0
 
 
 dt = 1.0/30.0 # 30 frames per second
@@ -214,7 +208,7 @@ rkf54 = RungeKuttaFehlberg54(planetz[0].ydot, planetz[0].state.size, dt, tol) #f
 
 plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
-fig = plot.figure() # matplotlib.pyplot = plot
+fig = plot.figure()
 
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-1.5*plotScale, plotScale*1.5), ylim=(-1.5*plotScale, plotScale * 2.5))
 
@@ -240,32 +234,22 @@ def init():
     acceleration_text.set_text('')
     return line1, line1_2, line2, time_text, position_text, acceleration_text
 
-boolyboi = False
+initialMass = False
 
 def animate(i):
-
     """perform animation step"""
-    #saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
-    global dt, planetz, time_0, time_difference, mass, boolyboi
+    global dt, planetz, time_0, mass, initialMass
     t0 = time_0
     time_1 = planetz[0].state[0]
     time_0 = time_1
-    time_difference = time_1 - t0
-    time_to_sleep = time_difference / dt - 1
-
-    """
-    if time_to_sleep > 0:
-        time.sleep(time_to_sleep * dt)
-    """
+    
     startTime = planetz[0].state[0]
 
-    if (boolyboi == False):
-        mass = saturnV2.calculateMass(0) #Må kjøres før Runge Kutta
-        boolyboi = True
+    if (initialMass == False):
+        mass = saturnV2.calculateMass(0) 
+        initialMass = True
 
-    #print("planetz[0].state: ",planetz[0].state)
-    #print("Moh (km): ",planetz[0].moh()/1000)
-    #print("akselerasjon: ",planetz[0].acceleration)
+   
     W , E = rkf54.safeStep(planetz[0].state)
 
     diff = W - planetz[0].state
@@ -273,15 +257,7 @@ def animate(i):
     mass = saturnV2.calculateMass(diffTime)
 
     if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        #planetz[0].angle = math.pi/2 -0.00253*W[0]
         planetz[0].angle = math.pi/2
-
-    #print("Time: ", W[0])
-    #print(planetz[0].moh()/1000)
-
-    #if(planetz[0].moh() > 1050e3 and planetz[0].moh() < 1200e3):
-        #print("Time: ", W[0])
-        #print(planetz[0].moh())
 
     planetz[0].state = W
 
@@ -300,20 +276,14 @@ time_1 = time.time()
 
 delay = 1 * dt - (time_1 - t0)
 
-anim=animation.FuncAnimation(fig,        # figure to plot in
-                        animate,    # function that is called on each frame
-                        frames=15000, # total number of frames
-                        interval=delay, # time to wait between each frame.
+anim=animation.FuncAnimation(fig,       
+                        animate,    
+                        frames=15000, 
+                        interval=delay, 
                         repeat=False,
                         blit=True,
-                        init_func=init # initialization
+                        init_func=init 
                         )
 
-# save the animation as an mp4.  This requires ffmpeg or mencoder to be
-# installed.  The extra_args ensure that the x264 codec is used, so that
-# the video can be embedded in html5.  You may need to adjust this for
-# your system: for more information, see
-# http://matplotlib.sourceforge.net/api/animation_api.html
-#anim.save('orbit.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
 
 plot.show()

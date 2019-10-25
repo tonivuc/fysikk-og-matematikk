@@ -45,13 +45,10 @@ class SaturnV:
 	#Calculates the mass of the rocket at a given time t
 	def calculateMass(self,t):
 		if 0 < self.fuel_one:
-			#print("Stage ooooone! :OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOooo")
 			self.fuel_one -= self.consumption_one*t
 		elif 0 < self.fuel_two:
-			#print("STAGE2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			self.fuel_two -= self.consumption_two*t
 		elif 0 < self.fuel_three:
-			#print("Stage 3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			self.fuel_three -= self.consumption_three*t
 		return (self.massAddition())
 
@@ -69,9 +66,6 @@ class SaturnV:
 		return thrust
 
 def main():
-
-	#m1 + m2 + m3 + d1 + d2 + d3 = 2.970.000kg
-
 	#Mass of different stages (kilograms)
 	m1 = 130000
 	m2 = 40100
