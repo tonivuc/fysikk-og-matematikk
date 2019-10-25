@@ -57,6 +57,9 @@ class SaturnV:
 
 	#Calculates the thrust of the rocket given atmospheric pressure and time (to get more accurate information)
 	def calculateThrust(self, t, p):
+
+		if (t > 980):
+			return 0
 		thrust = 0
 		if self.fuel_one > 0:
 			thrust = self.thrust_vac_one + (self.thrust_sea_one-self.thrust_vac_one)*p

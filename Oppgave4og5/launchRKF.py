@@ -216,7 +216,7 @@ plotScale = (12756.28/2) * 1000 # meters
 # The figure is set
 fig = plot.figure() # matplotlib.pyplot = plot
 
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-1*plotScale, plotScale*1), ylim=(-0*plotScale, plotScale * 2.2))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-1.5*plotScale, plotScale*1.5), ylim=(-1.5*plotScale, plotScale * 2.5))
 
 
 earth = plot.Circle((0, 0), (12756.28/2) * 1000, color='blue', alpha=0.2)
@@ -243,8 +243,6 @@ def init():
 boolyboi = False
 
 def animate(i):
-
-
 
     """perform animation step"""
     #saturnV = SaturnV(m1,c1,d1,ts1,tv1,m2,c2,d2,ts2,tv2,m3,c3,d3,ts3,tv3)
@@ -275,8 +273,8 @@ def animate(i):
     mass = saturnV2.calculateMass(diffTime)
 
     if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        #planetz[0].angle = math.pi/2 -0.00235*W[0]
-        planetz[0].angle = math.pi/2
+        planetz[0].angle = math.pi/2 -0.00249*W[0]
+        #planetz[0].angle = math.pi/2
 
     if(planetz[0].moh() > 190000 and planetz[0].moh() < 205000):
         print("Time: ", W[0])
@@ -296,7 +294,7 @@ t0 = time.time()
 animate(0)
 time_1 = time.time()
 
-delay = 30 * dt - (time_1 - t0)
+delay = 1 * dt - (time_1 - t0)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
                         animate,    # function that is called on each frame
