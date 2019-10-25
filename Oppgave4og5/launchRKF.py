@@ -276,12 +276,12 @@ def animate(i):
         planetz[0].angle = math.pi/2 -0.00253*W[0]
         #planetz[0].angle = math.pi/2
 
-    print("Time: ", W[0])
-    print(planetz[0].moh()/1000)
+    #print("Time: ", W[0])
+    #print(planetz[0].moh()/1000)
 
-    if(planetz[0].moh() > 1050e3 and planetz[0].moh() < 1200e3):
-        print("Time: ", W[0])
-        print(planetz[0].moh())
+    #if(planetz[0].moh() > 1050e3 and planetz[0].moh() < 1200e3):
+        #print("Time: ", W[0])
+        #print(planetz[0].moh())
 
     planetz[0].state = W
 
