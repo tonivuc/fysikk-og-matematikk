@@ -263,9 +263,9 @@ def animate(i):
         mass = saturnV2.calculateMass(0) #Må kjøres før Runge Kutta
         boolyboi = True
 
-    print("planetz[0].state: ",planetz[0].state)
-    print("Moh (km): ",planetz[0].moh()/1000)
-    print("akselerasjon: ",planetz[0].acceleration)
+    #print("planetz[0].state: ",planetz[0].state)
+    #print("Moh (km): ",planetz[0].moh()/1000)
+    #print("akselerasjon: ",planetz[0].acceleration)
     W , E = rkf54.safeStep(planetz[0].state)
 
     diff = W - planetz[0].state
@@ -273,11 +273,15 @@ def animate(i):
     mass = saturnV2.calculateMass(diffTime)
 
     if (saturnV2.calculateThrust(W[0], planetz[0].get_air_pressure(planetz[0].moh())/100) > 0):
-        planetz[0].angle = math.pi/2 -0.00249*W[0]
+        planetz[0].angle = math.pi/2 -0.00253*W[0]
         #planetz[0].angle = math.pi/2
 
-    if(planetz[0].moh() > 190000 and planetz[0].moh() < 205000):
+    print("Time: ", W[0])
+    print(planetz[0].moh()/1000)
+
+    if(planetz[0].moh() > 1050e3 and planetz[0].moh() < 1200e3):
         print("Time: ", W[0])
+        print(planetz[0].moh())
 
     planetz[0].state = W
 
